@@ -58,7 +58,6 @@ test("suggest a matching item", () => {
   assert.equal(matches[0].matchScore, 100);
 });
 
-
 test("should reject incorrect date sequence", () => {
   const { matchScore } = require("./searchMatching");
 
@@ -82,4 +81,3 @@ test("should reject incorrect date sequence", () => {
 
   assert.equal(score, 85);
 });
-

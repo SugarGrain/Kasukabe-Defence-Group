@@ -33,16 +33,23 @@ function matchScore(lost, found) {
 
   let score = 30;
 
+  // Location matching
   if (
     normalize(lost.location) &&
     normalize(lost.location) === normalize(found.location)
-  ) score += 25;
+  ) {
+    score += 25;
+  }
 
+  // Color matching
   if (
     normalize(lost.color) &&
     normalize(lost.color) === normalize(found.color)
-  ) score += 15;
+  ) {
+    score += 15;
+  }
 
+  // Date matching - corrected version
   const lostTime = Date.parse(lost.dateLost);
   const foundTime = Date.parse(found.dateFound);
 
@@ -51,11 +58,13 @@ function matchScore(lost, found) {
     Number.isFinite(foundTime)
   ) {
     const days = (foundTime - lostTime) / 86400000;
-    
+
     if (days >= 0 && days <= 7) {
       score += 15;
+    }
   }
 
+  // Item name matching
   const lostName = normalize(lost.itemName);
   const foundName = normalize(found.itemName);
 
@@ -63,7 +72,12 @@ function matchScore(lost, found) {
     score += 15;
   } else {
     const words = lostName.split(/\s+/).filter(Boolean);
-    if (words.some((word) => foundName.split(/\s+/).includes(word))) {
+
+    if (
+      words.some((word) =>
+        foundName.split(/\s+/).includes(word)
+      )
+    ) {
       score += 8;
     }
   }
@@ -71,7 +85,7 @@ function matchScore(lost, found) {
   return score;
 }
 
-// Suggest the best available found-item matches
+// Suggest possible matches
 function suggestMatches(lostItem, foundItems) {
   return foundItems
     .filter((item) => normalize(item.status) === "available")
@@ -83,4 +97,8 @@ function suggestMatches(lostItem, foundItems) {
     .sort((a, b) => b.matchScore - a.matchScore);
 }
 
-module.exports = { searchItems, matchScore, suggestMatches };
+module.exports = {
+  searchItems,
+  matchScore,
+  suggestMatches
+};
