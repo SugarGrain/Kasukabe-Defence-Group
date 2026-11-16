@@ -57,3 +57,29 @@ test("suggest a matching item", () => {
   assert.equal(matches.length, 1);
   assert.equal(matches[0].matchScore, 100);
 });
+
+
+test("should reject incorrect date sequence", () => {
+  const { matchScore } = require("./searchMatching");
+
+  const lost = {
+    itemName: "Black Wallet",
+    category: "Wallet",
+    color: "Black",
+    location: "IUB",
+    dateLost: "2026-11-10"
+  };
+
+  const found = {
+    itemName: "Black Wallet",
+    category: "Wallet",
+    color: "Black",
+    location: "IUB",
+    dateFound: "2026-11-09"
+  };
+
+  const score = matchScore(lost, found);
+
+  assert.equal(score, 85);
+});
+
