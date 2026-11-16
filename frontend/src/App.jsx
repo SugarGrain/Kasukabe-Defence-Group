@@ -1,4 +1,4 @@
-
+import FoundItem from "./pages/FoundItem";
 import "./App.css";
 
 function App() {
@@ -17,6 +17,7 @@ function App() {
       </ul>
 
       <p>Developed by Kasukabe Defence Group</p>
+      <FoundItem />
     </div>
   );
 }
