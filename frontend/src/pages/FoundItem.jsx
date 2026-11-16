@@ -1,4 +1,4 @@
-
+import "./FoundItem.css";
 import { useState } from "react";
 
 function FoundItem() {
@@ -26,11 +26,11 @@ function FoundItem() {
   };
 
   return (
-    <div>
+    <div className="found-item-page">
       <h1>Report a Found Item</h1>
       <p>Please provide information about the item you found.</p>
 
-      <form onSubmit={handleSubmit}>
+      <form className="found-item-form" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="itemName">Item Name</label>
           <input

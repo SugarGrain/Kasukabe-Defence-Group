@@ -1,0 +1,101 @@
+
+.found-item-page {
+  width: 100%;
+  max-width: 650px;
+  margin: 40px auto;
+  padding: 35px;
+  background-color: #202631;
+  border: 1px solid #3c4658;
+  border-radius: 12px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.found-item-page h1 {
+  color: #ffffff;
+  font-size: 30px;
+  margin: 0 0 10px;
+}
+
+.found-item-page p {
+  color: #b6c2d2;
+  font-size: 15px;
+  margin: 0 0 25px;
+}
+
+.found-item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.found-item-form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.found-item-form label {
+  color: #e5eaf2;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.found-item-form input,
+.found-item-form select,
+.found-item-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: #151b25;
+  color: #ffffff;
+  border: 1px solid #4c596e;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.found-item-form input::placeholder,
+.found-item-form textarea::placeholder {
+  color: #9ca3af;
+}
+
+.found-item-form input:focus,
+.found-item-form select:focus,
+.found-item-form textarea:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 1px;
+}
+
+.found-item-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.found-item-form button {
+  width: 100%;
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 7px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.found-item-form button:hover {
+  background-color: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+  .found-item-page {
+    padding: 20px;
+    margin: 25px auto;
+  }
+
+  .found-item-page h1 {
+    font-size: 25px;
+  }
+}
