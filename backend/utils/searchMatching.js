@@ -50,8 +50,10 @@ function matchScore(lost, found) {
     Number.isFinite(lostTime) &&
     Number.isFinite(foundTime)
   ) {
-    const days = Math.abs(foundTime - lostTime) / 86400000;
-    if (days <= 7) score += 15;
+    const days = (foundTime - lostTime) / 86400000;
+    
+    if (days >= 0 && days <= 7) {
+      score += 15;
   }
 
   const lostName = normalize(lost.itemName);
