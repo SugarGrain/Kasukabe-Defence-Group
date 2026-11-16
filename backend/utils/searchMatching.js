@@ -23,6 +23,32 @@ function searchItems(items, filters = {}) {
 }
 
 // Calculate a rule-based matching score
+
+function nameSimilarityScore(name1, name2) {
+  const getWords = (name) => {
+    return new Set(
+      normalize(name)
+        .replace(/[^a-z0-9]+/g, " ")
+        .split(/\s+/)
+        .filter(Boolean)
+    );
+  };
+
+  const words1 = getWords(name1);
+  const words2 = getWords(name2);
+
+  if (words1.size === 0 || words2.size === 0) {
+    return 0;
+  }
+
+  const common = [...words1].filter(word => words2.has(word));
+  const union = new Set([...words1, ...words2]);
+
+  const similarity = common.length / union.size;
+
+  return Math.round(similarity * 15);
+}
+
 function matchScore(lost, found) {
   if (
     !normalize(lost.category) ||
@@ -65,22 +91,14 @@ function matchScore(lost, found) {
   }
 
   // Item name matching
-  const lostName = normalize(lost.itemName);
-  const foundName = normalize(found.itemName);
+  
+const namePoints = nameSimilarityScore(
+  lost.itemName,
+  found.itemName
+);
 
-  if (lostName && lostName === foundName) {
-    score += 15;
-  } else {
-    const words = lostName.split(/\s+/).filter(Boolean);
+score += namePoints;
 
-    if (
-      words.some((word) =>
-        foundName.split(/\s+/).includes(word)
-      )
-    ) {
-      score += 8;
-    }
-  }
 
   return score;
 }
