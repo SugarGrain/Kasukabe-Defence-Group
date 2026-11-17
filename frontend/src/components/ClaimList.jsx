@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function ClaimList({ claims, onStatusChange, onRecover }) {
+export default function ClaimList({ claims, onStatusChange, onRecover, isAdmin }) {
   const [notes, setNotes] = useState({});
 
   return (
@@ -16,14 +16,14 @@ export default function ClaimList({ claims, onStatusChange, onRecover }) {
             Status: <span className={`badge badge-${c.status}`}>{c.status}</span>
           </p>
 
-          {c.status === "pending" && (
+          {isAdmin && c.status === "pending" && (
             <div className="claim-actions">
               <button className="btn btn-approve" onClick={() => onStatusChange(c._id, "approved")}>Approve</button>
               <button className="btn btn-reject" onClick={() => onStatusChange(c._id, "rejected")}>Reject</button>
             </div>
           )}
 
-          {c.status === "approved" && (
+          {isAdmin && c.status === "approved" && (
             <div className="recover-box">
               <input
                 placeholder="Handover note (where/how returned)"
