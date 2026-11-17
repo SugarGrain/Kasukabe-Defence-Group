@@ -1,10 +1,70 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [location, setLocation] = useState("All");
+  const [backendStatus, setBackendStatus] = useState("Checking...");
+  const [matches, setMatches] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/health")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Backend unavailable");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      setBackendStatus(data.message);
+    })
+    .catch(() => {
+      setBackendStatus("Backend connection failed");
+    });
+}, []);
+
+async function findMatches() {
+  const lostItem = {
+    itemName: "Black Wallet",
+    category: "Wallet",
+    color: "Black",
+    location: "IUB",
+    dateLost: "2026-11-10"
+  };
+
+  const foundItems = [
+    {
+      itemName: "Leather Black Wallet",
+      category: "Wallet",
+      color: "Black",
+      location: "IUB",
+      dateFound: "2026-11-11",
+      status: "Available"
+    }
+  ];
+
+  try {
+    const response = await fetch("/api/matches", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ lostItem, foundItems })
+    });
+
+    if (!response.ok) {
+      throw new Error("Matching request failed");
+    }
+
+    const data = await response.json();
+    setMatches(data.matches);
+  } catch (error) {
+    console.error("Matching error:", error);
+    setMatches([]);
+  }
+}
+
+
 
 
   const items = [
@@ -33,6 +93,10 @@ const filteredItems = items.filter((item) => {
   return (
     <div style={{ padding: "40px", fontFamily: "Arial" }}>
       <h1>Lost and Found System</h1>
+      <p style={{ color: "green", marginBottom: "20px" }}>
+        Backend Status: {backendStatus}
+      </p>
+
       <h2>Search Items</h2>
 
       <input
@@ -78,6 +142,22 @@ const filteredItems = items.filter((item) => {
 </select>
 
 
+<button
+  onClick={findMatches}
+  style={{
+    padding: "12px 20px",
+    marginLeft: "10px",
+    backgroundColor: "#2563eb",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  }}
+>
+  Find Matches
+</button>
+
+
 
       <div>
         {filteredItems.length === 0 ? (
@@ -102,6 +182,30 @@ const filteredItems = items.filter((item) => {
           ))
         )}
       </div>
+      <div style={{ marginTop: "30px" }}>
+  <h2>Possible Matches</h2>
+
+  {matches.length === 0 ? (
+    <p>No matching results yet. Click "Find Matches".</p>
+  ) : (
+    matches.map((item, index) => (
+      <div
+        key={index}
+        style={{
+          border: "1px solid #ddd",
+          padding: "15px",
+          marginBottom: "10px",
+          borderRadius: "8px",
+        }}
+      >
+        <h3>{item.itemName}</h3>
+        <p>Category: {item.category}</p>
+        <p>Location: {item.location}</p>
+        <p>Match Score: {item.matchScore}/100</p>
+      </div>
+    ))
+  )}
+</div>
     </div>
   );
 }
