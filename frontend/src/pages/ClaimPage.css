@@ -1,0 +1,129 @@
+.claim-page {
+  min-height: 100vh;
+  background: #f4f6fb;
+  padding: 32px 16px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #1f2937;
+  text-align: left;
+}
+
+.claim-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.claim-title {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.claim-subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 28px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.claim-form {
+  display: grid;
+  gap: 12px;
+}
+
+.claim-form input,
+.claim-form textarea,
+.recover-box input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.claim-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.claim-form input:focus,
+.claim-form textarea:focus,
+.recover-box input:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary { background: #4f46e5; }
+.btn-approve { background: #16a34a; }
+.btn-reject { background: #dc2626; }
+.btn-recover { background: #0284c7; }
+
+.success-msg {
+  color: #16a34a;
+  margin: 0;
+}
+
+.claim-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.claim-item p {
+  margin: 4px 0;
+}
+
+.claim-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.recover-box {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge-pending { background: #fef3c7; color: #b45309; }
+.badge-approved { background: #dcfce7; color: #15803d; }
+.badge-rejected { background: #fee2e2; color: #b91c1c; }
+.badge-recovered { background: #e0f2fe; color: #0369a1; }
