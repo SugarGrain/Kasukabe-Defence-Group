@@ -2,22 +2,50 @@ import "./FoundItem.css";
 import { useState } from "react";
 
 function FoundItem() {
-  const [formData, setFormData] = useState({
-    itemName: "",
-    category: "",
-    location: "",
-    foundDate: "",
-    description: "",
+  
+const [formData, setFormData] = useState({
+  itemName: "",
+  category: "",
+  location: "",
+  foundDate: "",
+  description: "",
+});
+
+const [imagePreview, setImagePreview] = useState("");
+
+
+const handleChange = (event) => {
+  const { name, value } = event.target;
+
+  setFormData({
+    ...formData,
+    [name]: value,
   });
+};
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+const handleImageChange = (event) => {
+  const file = event.target.files[0];
 
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image file.");
+    event.target.value = "";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Image size must be less than 5 MB.");
+    event.target.value = "";
+    return;
+  }
+
+  setImagePreview(URL.createObjectURL(file));
+};
+
+
+
+ 
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -99,6 +127,42 @@ function FoundItem() {
             required
           />
         </div>
+        
+<div>
+  <label htmlFor="itemImage">Upload Item Image</label>
+
+  <input
+    id="itemImage"
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+  />
+
+  {imagePreview && (
+    <div>
+      <img
+        src={imagePreview}
+        alt="Found item preview"
+        style={{
+          width: "200px",
+          marginTop: "15px",
+          borderRadius: "8px",
+        }}
+      />
+
+      <button
+        type="button"
+        onClick={() => {
+          setImagePreview("");
+          document.getElementById("itemImage").value = "";
+        }}
+      >
+        Remove Image
+      </button>
+    </div>
+  )}
+</div>
+
 
         <button type="submit">Submit Found Item</button>
       </form>
