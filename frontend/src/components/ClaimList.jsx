@@ -4,31 +4,34 @@ export default function ClaimList({ claims, onStatusChange, onRecover }) {
   const [notes, setNotes] = useState({});
 
   return (
-    <div>
+    <div className="card">
       <h2>All Claims</h2>
       {claims.length === 0 && <p>No claims yet.</p>}
       {claims.map((c) => (
-        <div key={c._id} style={{ border: "1px solid gray", margin: 8, padding: 8 }}>
+        <div key={c._id} className="claim-item">
           <p><b>{c.claimantName}</b> ({c.claimantEmail})</p>
-          <p>Item: {c.itemId}</p>
+          <p>Item ID: {c.itemId}</p>
           <p>Proof: {c.proofDescription}</p>
-          <p>Status: <b>{c.status}</b></p>
+          <p>
+            Status: <span className={`badge badge-${c.status}`}>{c.status}</span>
+          </p>
 
           {c.status === "pending" && (
-            <>
-              <button onClick={() => onStatusChange(c._id, "approved")}>Approve</button>
-              <button onClick={() => onStatusChange(c._id, "rejected")}>Reject</button>
-            </>
+            <div className="claim-actions">
+              <button className="btn btn-approve" onClick={() => onStatusChange(c._id, "approved")}>Approve</button>
+              <button className="btn btn-reject" onClick={() => onStatusChange(c._id, "rejected")}>Reject</button>
+            </div>
           )}
 
           {c.status === "approved" && (
-            <div>
+            <div className="recover-box">
               <input
                 placeholder="Handover note (where/how returned)"
                 value={notes[c._id] || ""}
                 onChange={(e) => setNotes({ ...notes, [c._id]: e.target.value })}
               />
               <button
+                className="btn btn-recover"
                 onClick={() => onRecover(c._id, notes[c._id] || "")}
                 disabled={!notes[c._id]}
               >
