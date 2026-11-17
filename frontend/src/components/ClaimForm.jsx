@@ -20,14 +20,14 @@ export default function ClaimForm({ onSubmit }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "grid", gap: 8, maxWidth: 400 }}>
+    <form onSubmit={handleSubmit} className="card claim-form">
       <h2>Claim an Item</h2>
       <input name="itemId" placeholder="Item ID" value={form.itemId} onChange={handleChange} required />
       <input name="claimantName" placeholder="Your Name" value={form.claimantName} onChange={handleChange} required />
       <input name="claimantEmail" type="email" placeholder="Your Email" value={form.claimantEmail} onChange={handleChange} required />
       <textarea name="proofDescription" placeholder="Describe proof of ownership" value={form.proofDescription} onChange={handleChange} required />
-      <button type="submit">Submit Claim</button>
-      <p>{msg}</p>
+      <button type="submit" className="btn btn-primary">Submit Claim</button>
+      {msg && <p className="success-msg">{msg}</p>}
     </form>
   );
 }
