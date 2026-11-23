@@ -20,6 +20,27 @@ function Hero() {
             </Link>
           </div>
         </div>
+
+        <aside className="hero-card" aria-label="Sample listing">
+          <div className="tag-hole" aria-hidden="true"></div>
+          <p className="tag-status">Found</p>
+          <h3 className="tag-title">Black leather wallet</h3>
+          <dl className="tag-details">
+            <div>
+              <dt>Where</dt>
+              <dd>Library, second floor</dd>
+            </div>
+            <div>
+              <dt>When</dt>
+              <dd>Tuesday, around 3 pm</dd>
+            </div>
+            <div>
+              <dt>Contact</dt>
+              <dd>Through the claim form</dd>
+            </div>
+          </dl>
+          <p className="tag-note">Sample listing</p>
+        </aside>
       </div>
     </section>
   );
