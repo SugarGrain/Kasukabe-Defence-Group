@@ -1,0 +1,25 @@
+.hero {
+  padding: var(--space-6) 0 var(--space-5);
+}
+
+.hero-text {
+  max-width: 40rem;
+}
+
+.hero-text p {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding: var(--space-5) 0 var(--space-4);
+  }
+}
