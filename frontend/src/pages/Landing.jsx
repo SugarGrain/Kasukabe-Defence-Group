@@ -1,7 +1,12 @@
+import Navbar from "../components/Navbar.jsx";
+
 function Landing() {
   return (
     <div>
-      <h1>Landing Page</h1>
+      <Navbar />
+      <main>
+        <h1>Landing Page</h1>
+      </main>
     </div>
   );
 }
