@@ -32,20 +32,23 @@ async function findMatches() {
     dateLost: "2026-11-10"
   };
 
-  const foundItems = [
-    {
-      itemName: "Leather Black Wallet",
-      category: "Wallet",
-      color: "Black",
-      location: "IUB",
-      dateFound: "2026-11-11",
-      status: "Available"
-    }
-  ];
+  
 
-  try {
-    const response = await fetch("/api/matches", {
-      method: "POST",
+  
+try {
+  // Retrieve submitted found items from the backend
+  const foundResponse = await fetch("/api/found-items");
+
+  if (!foundResponse.ok) {
+    throw new Error("Failed to retrieve found items");
+  }
+
+  const foundData = await foundResponse.json();
+  const foundItems = foundData.items;
+
+  // Send retrieved items to the matching API
+  const response = await fetch("/api/matches", {
+    method: "POST",
       headers: {
         "Content-Type": "application/json"
       },

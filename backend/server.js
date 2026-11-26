@@ -129,6 +129,16 @@ app.post("/api/found-items", (req, res) => {
   });
 });
 
+
+app.get("/api/found-items", (req, res) => {
+  res.json({
+    success: true,
+    totalItems: foundItemReports.length,
+    items: foundItemReports
+  });
+});
+
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
