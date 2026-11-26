@@ -1,6 +1,15 @@
 
 const express = require("express");
 
+const mongoose = require("mongoose");
+const FoundItem = require("./models/FoundItem");
+const path = require("path");
+
+require("dotenv").config({
+  path: path.join(__dirname, ".env")
+});
+
+
 const { searchItems, suggestMatches } = require("./utils/searchMatching");
 
 const app = express();
@@ -44,50 +53,46 @@ app.post("/api/matches", (req, res) => {
 });
 
 
-app.get("/api/search", (req, res) => {
+
+app.get("/api/search", async (req, res) => {
   const { keyword = "", category = "", location = "" } = req.query;
 
-  // Temporary sample data for testing
-  const items = [
-    {
-      id: "sample-1",
-      itemName: "Black Wallet",
-      description: "Lost leather wallet",
-      category: "Wallet",
-      location: "IUB"
-    },
-    {
-      id: "sample-2",
-      itemName: "Samsung Phone",
-      description: "Samsung smartphone",
-      category: "Electronics",
-      location: "Dhaka"
-    },
-    {
-      id: "sample-3",
-      itemName: "Student ID Card",
-      description: "University student ID card",
-      category: "Documents",
-      location: "IUB"
-    }
-  ];
+  try {
+    // Retrieve real found item reports from MongoDB
+    const foundItems = await FoundItem.find().lean();
 
-  const allItems = [...items, ...foundItemReports];
-  const results = searchItems(allItems, {
-    keyword: String(keyword),
-    category: category === "All" ? "" : String(category),
-    location: location === "All" ? "" : String(location)
-  });
+    // Keep the ID format compatible with the frontend
+    const allItems = foundItems.map((item) => ({
+      ...item,
+      id: String(item._id)
+    }));
 
-  res.json({
-    success: true,
-    totalResults: results.length,
-    items: results
-  });
+    // Apply existing search filters
+    const results = searchItems(allItems, {
+      keyword: String(keyword),
+      category: category === "All" ? "" : String(category),
+      location: location === "All" ? "" : String(location)
+    });
+
+    res.json({
+      success: true,
+      totalResults: results.length,
+      items: results
+    });
+  } catch (error) {
+    console.error("Search failed:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to search found items."
+    });
+  }
 });
 
 
-app.post("/api/found-items", (req, res) => {
+
+
+app.post("/api/found-items", async (req, res) => {
   const {
     itemName,
     category,
@@ -108,38 +113,88 @@ app.post("/api/found-items", (req, res) => {
     });
   }
 
-  // Create a new found item report
-  const newReport = {
-    id: foundItemReports.length + 1,
-    itemName: itemName.trim(),
-    category: category.trim(),
-    location: location.trim(),
-    dateFound: foundDate,
-    description: description.trim(),
-    status: "Available"
-  };
+  // Validate the date
+  const parsedDate = new Date(foundDate.trim());
 
-  // Save temporarily in server memory
-  foundItemReports.push(newReport);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide a valid found date."
+    });
+  }
 
-  res.status(201).json({
-    success: true,
-    message: "Found item report submitted successfully!",
-    item: newReport
+  try {
+    // Save the report permanently in MongoDB
+    const newReport = await FoundItem.create({
+      itemName: itemName.trim(),
+      category: category.trim(),
+      location: location.trim(),
+      dateFound: parsedDate,
+      description: description.trim(),
+      status: "Available"
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Found item report submitted successfully!",
+      item: newReport
+    });
+  } catch (error) {
+    console.error("Failed to save found item:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to save found item report."
+    });
+  }
+});
+
+
+
+app.get("/api/found-items", async (req, res) => {
+  try {
+    const items = await FoundItem.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      totalItems: items.length,
+      items: items
+    });
+  } catch (error) {
+    console.error("Failed to retrieve found items:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve found items."
+    });
+  }
+});
+
+
+
+// Connect MongoDB before starting the server
+const mongoUri = process.env.MONGODB_URI;
+
+if (!mongoUri) {
+  console.error("MONGODB_URI is missing in backend/.env");
+  process.exit(1);
+}
+
+mongoose
+  .connect(mongoUri, {
+    dbName: "lost_and_found",
+    serverSelectionTimeoutMS: 10000
+  })
+  .then(() => {
+    console.log("Connected to MongoDB Atlas!");
+
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("MongoDB connection failed:", error.message);
+    process.exit(1);
   });
-});
 
 
-app.get("/api/found-items", (req, res) => {
-  res.json({
-    success: true,
-    totalItems: foundItemReports.length,
-    items: foundItemReports
-  });
-});
-
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});

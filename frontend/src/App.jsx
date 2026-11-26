@@ -26,7 +26,7 @@ function App() {
 async function findMatches() {
   const lostItem = {
     itemName: "Black Wallet",
-    category: "Wallet",
+    category: "Accessories",
     color: "Black",
     location: "IUB",
     dateLost: "2026-11-10"
