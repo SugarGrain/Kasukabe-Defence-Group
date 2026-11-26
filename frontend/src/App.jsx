@@ -67,11 +67,43 @@ async function findMatches() {
 
 
 
-  const items = [
-    { id: 1, name: "Black Wallet", category: "Wallet", location: "IUB" },
-    { id: 2, name: "Samsung Phone", category: "Electronics", location: "Dhaka" },
-    { id: 3, name: "Student ID Card", category: "Documents", location: "IUB" },
-  ];
+  const [items, setItems] = useState([]);
+  
+  useEffect(() => {
+  const controller = new AbortController();
+
+  const params = new URLSearchParams({
+    keyword: search,
+    category: category === "All" ? "" : category,
+    location: location === "All" ? "" : location,
+  });
+
+  fetch(`/api/search?${params.toString()}`, {
+    signal: controller.signal,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Search request failed");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const results = data.items.map((item) => ({
+        ...item,
+        name: item.itemName,
+      }));
+
+      setItems(results);
+    })
+    .catch((error) => {
+      if (error.name !== "AbortError") {
+        console.error("Search error:", error);
+        setItems([]);
+      }
+    });
+
+  return () => controller.abort();
+}, [search, category, location]);
 
   
 
