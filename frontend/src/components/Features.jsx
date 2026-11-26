@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./Features.css";
 
 const features = [
@@ -20,6 +21,7 @@ const features = [
   {
     title: "Claim and Recovery",
     text: "Claim an item, get it approved by an admin, and mark it as recovered.",
+    to: "/claims",
   },
 ];
 
@@ -29,12 +31,22 @@ function Features() {
       <div className="container">
         <h2>Features</h2>
         <div className="feature-grid">
-          {features.map((feature) => (
-            <article className="feature-card" key={feature.title}>
-              <h3>{feature.title}</h3>
-              <p>{feature.text}</p>
-            </article>
-          ))}
+          {features.map((feature) => {
+            const card = (
+              <article className="feature-card" key={feature.title}>
+                <h3>{feature.title}</h3>
+                <p>{feature.text}</p>
+              </article>
+            );
+
+            return feature.to ? (
+              <Link to={feature.to} className="feature-card-link" key={feature.title}>
+                {card}
+              </Link>
+            ) : (
+              card
+            );
+          })}
         </div>
       </div>
     </section>
