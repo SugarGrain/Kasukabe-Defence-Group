@@ -1,9 +1,75 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Auth.css";
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function missingPasswordParts(password) {
+  const missing = [];
+  if (password.length < 8) missing.push("at least 8 characters");
+  if (!/[a-z]/.test(password)) missing.push("a lowercase letter");
+  if (!/[A-Z]/.test(password)) missing.push("an uppercase letter");
+  if (!/[0-9]/.test(password)) missing.push("a number");
+  if (!/[^A-Za-z0-9]/.test(password)) missing.push("a symbol");
+  return missing;
+}
+
+function validate(values) {
+  const errors = {};
+
+  if (values.name.trim().length < 2) {
+    errors.name = "Please enter your name.";
+  }
+
+  if (!values.email.trim()) {
+    errors.email = "Please enter your email.";
+  } else if (!emailPattern.test(values.email.trim())) {
+    errors.email = "Please enter a valid email address.";
+  }
+
+  if (!values.password) {
+    errors.password = "Please enter a password.";
+  } else {
+    const missing = missingPasswordParts(values.password);
+    if (missing.length > 0) {
+      errors.password = "Password still needs: " + missing.join(", ") + ".";
+    }
+  }
+
+  if (!values.confirmPassword) {
+    errors.confirmPassword = "Please confirm your password.";
+  } else if (values.confirmPassword !== values.password) {
+    errors.confirmPassword = "Passwords do not match.";
+  }
+
+  return errors;
+}
+
 function Register() {
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues((current) => ({ ...current, [name]: value }));
+    if (errors[name]) {
+      setErrors((current) => ({ ...current, [name]: undefined }));
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+    const nextErrors = validate(values);
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+    // The call to the register API will be added later.
   };
 
   return (
@@ -20,7 +86,21 @@ function Register() {
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <label htmlFor="name">Name</label>
-          <input id="name" name="name" type="text" autoComplete="name" />
+          <input
+            id="name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            value={values.name}
+            onChange={handleChange}
+            aria-invalid={Boolean(errors.name)}
+            aria-describedby={errors.name ? "name-error" : undefined}
+          />
+          {errors.name && (
+            <p className="field-error" id="name-error">
+              {errors.name}
+            </p>
+          )}
 
           <label htmlFor="email">Email</label>
           <input
@@ -28,7 +108,16 @@ function Register() {
             name="email"
             type="email"
             autoComplete="email"
+            value={values.email}
+            onChange={handleChange}
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? "email-error" : undefined}
           />
+          {errors.email && (
+            <p className="field-error" id="email-error">
+              {errors.email}
+            </p>
+          )}
 
           <label htmlFor="password">Password</label>
           <input
@@ -36,11 +125,21 @@ function Register() {
             name="password"
             type="password"
             autoComplete="new-password"
+            value={values.password}
+            onChange={handleChange}
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby={errors.password ? "password-error" : undefined}
           />
-          <p className="field-hint">
-            At least 8 characters, with an uppercase letter, a lowercase
-            letter, a number and a symbol.
-          </p>
+          {errors.password ? (
+            <p className="field-error" id="password-error">
+              {errors.password}
+            </p>
+          ) : (
+            <p className="field-hint">
+              At least 8 characters, with an uppercase letter, a lowercase
+              letter, a number and a symbol.
+            </p>
+          )}
 
           <label htmlFor="confirmPassword">Confirm password</label>
           <input
@@ -48,7 +147,18 @@ function Register() {
             name="confirmPassword"
             type="password"
             autoComplete="new-password"
+            value={values.confirmPassword}
+            onChange={handleChange}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            aria-describedby={
+              errors.confirmPassword ? "confirmPassword-error" : undefined
+            }
           />
+          {errors.confirmPassword && (
+            <p className="field-error" id="confirmPassword-error">
+              {errors.confirmPassword}
+            </p>
+          )}
 
           <button type="submit" className="btn btn-primary auth-submit">
             Create account
