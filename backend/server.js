@@ -5,6 +5,8 @@ const { searchItems, suggestMatches } = require("./utils/searchMatching");
 
 const app = express();
 const PORT = 5000;
+const foundItemReports = [];
+
 
 // Allow the server to receive JSON data
 app.use(express.json());
@@ -48,21 +50,21 @@ app.get("/api/search", (req, res) => {
   // Temporary sample data for testing
   const items = [
     {
-      id: 1,
+      id: "sample-1",
       itemName: "Black Wallet",
       description: "Lost leather wallet",
       category: "Wallet",
       location: "IUB"
     },
     {
-      id: 2,
+      id: "sample-2",
       itemName: "Samsung Phone",
       description: "Samsung smartphone",
       category: "Electronics",
       location: "Dhaka"
     },
     {
-      id: 3,
+      id: "sample-3",
       itemName: "Student ID Card",
       description: "University student ID card",
       category: "Documents",
@@ -70,7 +72,8 @@ app.get("/api/search", (req, res) => {
     }
   ];
 
-  const results = searchItems(items, {
+  const allItems = [...items, ...foundItemReports];
+  const results = searchItems(allItems, {
     keyword: String(keyword),
     category: category === "All" ? "" : String(category),
     location: location === "All" ? "" : String(location)
@@ -83,6 +86,48 @@ app.get("/api/search", (req, res) => {
   });
 });
 
+
+app.post("/api/found-items", (req, res) => {
+  const {
+    itemName,
+    category,
+    location,
+    foundDate,
+    description
+  } = req.body || {};
+
+  // Validate required fields
+  if (
+    [itemName, category, location, foundDate, description].some(
+      (value) => typeof value !== "string" || !value.trim()
+    )
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "All required fields must be provided."
+    });
+  }
+
+  // Create a new found item report
+  const newReport = {
+    id: foundItemReports.length + 1,
+    itemName: itemName.trim(),
+    category: category.trim(),
+    location: location.trim(),
+    dateFound: foundDate,
+    description: description.trim(),
+    status: "Available"
+  };
+
+  // Save temporarily in server memory
+  foundItemReports.push(newReport);
+
+  res.status(201).json({
+    success: true,
+    message: "Found item report submitted successfully!",
+    item: newReport
+  });
+});
 
 // Start the server
 app.listen(PORT, () => {
