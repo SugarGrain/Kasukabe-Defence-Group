@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import ClaimForm from "../components/ClaimForm";
 import ClaimList from "../components/ClaimList";
 import "./ClaimPage.css";
@@ -27,37 +29,43 @@ export default function ClaimPage() {
     );
 
   return (
-    <div className="claim-page">
-      <div className="claim-container">
-        <h1 className="claim-title">Claim & Item Recovery</h1>
-        <p className="claim-subtitle">Submit a claim and track recovery of your lost item</p>
+    <>
+      <Navbar />
+      <main className="claim-page">
+        <div className="container">
+          <h1>Claim and Recovery</h1>
+          <p className="claim-subtitle">
+            Submit a claim and track the recovery of your lost item.
+          </p>
 
-        <div style={{ textAlign: "center", marginBottom: 20 }}>
-          <button
-            className={`btn ${role === "user" ? "btn-primary" : ""}`}
-            style={role !== "user" ? { background: "#9ca3af" } : {}}
-            onClick={() => setRole("user")}
-          >
-            User View
-          </button>{" "}
-          <button
-            className={`btn ${role === "admin" ? "btn-primary" : ""}`}
-            style={role !== "admin" ? { background: "#9ca3af" } : {}}
-            onClick={() => setRole("admin")}
-          >
-            Admin View
-          </button>
+          <div className="claim-toggle">
+            <button
+              type="button"
+              className={`btn ${role === "user" ? "btn-primary" : "btn-outline"}`}
+              onClick={() => setRole("user")}
+            >
+              User view
+            </button>
+            <button
+              type="button"
+              className={`btn ${role === "admin" ? "btn-primary" : "btn-outline"}`}
+              onClick={() => setRole("admin")}
+            >
+              Admin view
+            </button>
+          </div>
+
+          {role === "user" && <ClaimForm onSubmit={addClaim} />}
+
+          <ClaimList
+            claims={claims}
+            onStatusChange={changeStatus}
+            onRecover={recoverItem}
+            isAdmin={role === "admin"}
+          />
         </div>
-
-        {role === "user" && <ClaimForm onSubmit={addClaim} />}
-
-        <ClaimList
-          claims={claims}
-          onStatusChange={changeStatus}
-          onRecover={recoverItem}
-          isAdmin={role === "admin"}
-        />
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }
