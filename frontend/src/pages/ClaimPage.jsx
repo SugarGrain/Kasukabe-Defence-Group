@@ -5,6 +5,7 @@ import "./ClaimPage.css";
 
 export default function ClaimPage() {
   const [claims, setClaims] = useState([]);
+  const [role, setRole] = useState("user");
 
   const addClaim = (claim) => setClaims([claim, ...claims]);
 
@@ -30,11 +31,31 @@ export default function ClaimPage() {
       <div className="claim-container">
         <h1 className="claim-title">Claim & Item Recovery</h1>
         <p className="claim-subtitle">Submit a claim and track recovery of your lost item</p>
-        <ClaimForm onSubmit={addClaim} />
+
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <button
+            className={`btn ${role === "user" ? "btn-primary" : ""}`}
+            style={role !== "user" ? { background: "#9ca3af" } : {}}
+            onClick={() => setRole("user")}
+          >
+            User View
+          </button>{" "}
+          <button
+            className={`btn ${role === "admin" ? "btn-primary" : ""}`}
+            style={role !== "admin" ? { background: "#9ca3af" } : {}}
+            onClick={() => setRole("admin")}
+          >
+            Admin View
+          </button>
+        </div>
+
+        {role === "user" && <ClaimForm onSubmit={addClaim} />}
+
         <ClaimList
           claims={claims}
           onStatusChange={changeStatus}
           onRecover={recoverItem}
+          isAdmin={role === "admin"}
         />
       </div>
     </div>
