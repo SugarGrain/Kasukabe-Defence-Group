@@ -86,3 +86,9 @@
 .auth-form input[aria-invalid="true"] {
   border-color: #9b3a2b;
 }
+
+.field-hint {
+  margin: -0.6rem 0 var(--space-2);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
