@@ -18,8 +18,20 @@ export default function ClaimList({ claims, onStatusChange, onRecover, isAdmin }
 
           {isAdmin && c.status === "pending" && (
             <div className="claim-actions">
-              <button className="btn btn-approve" onClick={() => onStatusChange(c._id, "approved")}>Approve</button>
-              <button className="btn btn-reject" onClick={() => onStatusChange(c._id, "rejected")}>Reject</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => onStatusChange(c._id, "approved")}
+              >
+                Approve
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline claim-reject"
+                onClick={() => onStatusChange(c._id, "rejected")}
+              >
+                Reject
+              </button>
             </div>
           )}
 
@@ -31,11 +43,12 @@ export default function ClaimList({ claims, onStatusChange, onRecover, isAdmin }
                 onChange={(e) => setNotes({ ...notes, [c._id]: e.target.value })}
               />
               <button
-                className="btn btn-recover"
+                type="button"
+                className="btn btn-primary"
                 onClick={() => onRecover(c._id, notes[c._id] || "")}
                 disabled={!notes[c._id]}
               >
-                Mark as Recovered
+                Mark as recovered
               </button>
             </div>
           )}
