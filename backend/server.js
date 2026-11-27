@@ -3,6 +3,7 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 const FoundItem = require("./models/FoundItem");
+const LostItem = require("./models/LostItem");
 const path = require("path");
 
 require("dotenv").config({
@@ -170,7 +171,94 @@ app.get("/api/found-items", async (req, res) => {
   }
 });
 
+// Submit a Lost Item report
+app.post("/api/lost-items", async (req, res) => {
+  const {
+    itemName,
+    category,
+    location,
+    dateLost,
+    color = "",
+    description = ""
+  } = req.body || {};
 
+  // Validate required fields
+  if (
+    [itemName, category, location, dateLost].some(
+      (value) => typeof value !== "string" || !value.trim()
+    )
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "All required fields must be provided."
+    });
+  }
+
+  if (typeof color !== "string" || typeof description !== "string") {
+    return res.status(400).json({
+      success: false,
+      message: "Color and description must be text."
+    });
+  }
+
+  // Validate the lost date
+  const parsedDate = new Date(dateLost.trim());
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide a valid lost date."
+    });
+  }
+
+  try {
+    // Save lost item to MongoDB
+    const newReport = await LostItem.create({
+      itemName: itemName.trim(),
+      category: category.trim(),
+      location: location.trim(),
+      dateLost: parsedDate,
+      color: color.trim(),
+      description: description.trim(),
+      status: "Lost"
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Lost item report submitted successfully!",
+      item: newReport
+    });
+  } catch (error) {
+    console.error("Failed to save lost item:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to save lost item report."
+    });
+  }
+});
+
+// Retrieve all Lost Item reports
+app.get("/api/lost-items", async (req, res) => {
+  try {
+    const items = await LostItem.find()
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({
+      success: true,
+      totalItems: items.length,
+      items: items
+    });
+  } catch (error) {
+    console.error("Failed to retrieve lost items:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve lost items."
+    });
+  }
+});
 
 // Connect MongoDB before starting the server
 const mongoUri = process.env.MONGODB_URI;

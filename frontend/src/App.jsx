@@ -6,6 +6,8 @@ function App() {
   const [location, setLocation] = useState("All");
   const [backendStatus, setBackendStatus] = useState("Checking...");
   const [matches, setMatches] = useState([]);
+  const [lostItems, setLostItems] = useState([]);
+  const [selectedLostItemId, setSelectedLostItemId] = useState("");
 
   useEffect(() => {
     fetch("/api/health")
@@ -23,19 +25,70 @@ function App() {
     });
 }, []);
 
+
+useEffect(() => {
+  const controller = new AbortController();
+
+  async function loadLostItems() {
+    try {
+      const response = await fetch("/api/lost-items", {
+        signal: controller.signal
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch lost items");
+      }
+
+      const data = await response.json();
+
+      if (!controller.signal.aborted) {
+        setLostItems(Array.isArray(data.items) ? data.items : []);
+      }
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        console.error("Error loading lost items:", error);
+      }
+    }
+  }
+
+  loadLostItems();
+
+  return () => controller.abort();
+}, []);
+
+
 async function findMatches() {
-  const lostItem = {
-    itemName: "Black Wallet",
-    category: "Accessories",
-    color: "Black",
-    location: "IUB",
-    dateLost: "2026-11-10"
-  };
+  try {
+  // Retrieve actual lost items from MongoDB
+  const lostResponse = await fetch("/api/lost-items");
 
+  if (!lostResponse.ok) {
+    throw new Error("Failed to retrieve lost items");
+  }
+
+  const lostData = await lostResponse.json();
+
+  if (!Array.isArray(lostData.items)) {
+    throw new Error("Invalid lost items response");
+  }
+
+  if (lostData.items.length === 0) {
+    setMatches([]);
+    return;
+  }
+
+// Find the lost item selected by the user
+const lostItem = lostData.items.find(
+  (item) => String(item._id) === selectedLostItemId
+);
+
+if (!lostItem) {
+  alert("Please select a lost item first.");
+  setMatches([]);
+  return;
+}
   
 
-  
-try {
   // Retrieve submitted found items from the backend
   const foundResponse = await fetch("/api/found-items");
 
@@ -174,6 +227,33 @@ const filteredItems = items.filter((item) => {
   <option value="All">All Locations</option>
   <option value="IUB">IUB</option>
   <option value="Dhaka">Dhaka</option>
+</select>
+
+
+<label htmlFor="lost-item-select" style={{ marginLeft: "10px" }}>
+  Select Lost Item:
+</label>
+
+<select
+  id="lost-item-select"
+  value={selectedLostItemId}
+  onChange={(e) => {
+    setSelectedLostItemId(e.target.value);
+    setMatches([]);
+  }}
+  style={{
+    padding: "10px",
+    marginLeft: "8px",
+    borderRadius: "5px"
+  }}
+>
+  <option value="">-- Select a lost item --</option>
+
+  {lostItems.map((item) => (
+    <option key={item._id} value={item._id}>
+      {item.itemName} - {item.location}
+    </option>
+  ))}
 </select>
 
 
