@@ -12,6 +12,11 @@ const foundItemSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    color: {
+      type: String,
+      default: "",
+      trim: true
+    },
     location: {
       type: String,
       required: true

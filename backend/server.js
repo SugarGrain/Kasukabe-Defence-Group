@@ -99,7 +99,8 @@ app.post("/api/found-items", async (req, res) => {
     category,
     location,
     foundDate,
-    description
+    description,
+    color = ""
   } = req.body || {};
 
   // Validate required fields
@@ -114,6 +115,13 @@ app.post("/api/found-items", async (req, res) => {
     });
   }
 
+  // Validate optional color field
+if (typeof color !== "string") {
+  return res.status(400).json({
+    success: false,
+    message: "Color must be text."
+  });
+}
   // Validate the date
   const parsedDate = new Date(foundDate.trim());
 
@@ -132,6 +140,7 @@ app.post("/api/found-items", async (req, res) => {
       location: location.trim(),
       dateFound: parsedDate,
       description: description.trim(),
+      color: color.trim(),
       status: "Available"
     });
 

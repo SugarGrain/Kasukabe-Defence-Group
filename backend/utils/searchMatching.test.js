@@ -104,3 +104,26 @@ test("matches item names regardless of word order", () => {
 
   assert.equal(matchScore(lost, found), 100);
 });
+
+
+test("handles found items without a color field", () => {
+  const { matchScore } = require("./searchMatching");
+
+  const lost = {
+    itemName: "Black Wallet",
+    category: "Wallet",
+    color: "Black",
+    location: "IUB",
+    dateLost: "2026-11-10"
+  };
+
+  const found = {
+    itemName: "Black Wallet",
+    category: "Wallet",
+    location: "IUB",
+    dateFound: "2026-11-11",
+    status: "Available"
+  };
+
+  assert.equal(matchScore(lost, found), 85);
+});
