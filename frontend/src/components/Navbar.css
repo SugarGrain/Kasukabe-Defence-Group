@@ -97,3 +97,8 @@
     margin: 0;
   }
 }
+
+.navbar-user {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
