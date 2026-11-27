@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import "./Navbar.css";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, isLoggedIn, logout } = useAuth();
   const close = () => setOpen(false);
+
+  const handleLogout = () => {
+    logout();
+    close();
+  };
 
   return (
     <header className="navbar">
@@ -34,12 +41,27 @@ function Navbar() {
           </div>
 
           <div className="navbar-actions">
-            <Link to="/login" className="btn btn-outline" onClick={close}>
-              Login
-            </Link>
-            <Link to="/register" className="btn btn-primary" onClick={close}>
-              Register
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <span className="navbar-user">{user.name}</span>
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="btn btn-outline" onClick={close}>
+                  Login
+                </Link>
+                <Link to="/register" className="btn btn-primary" onClick={close}>
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
