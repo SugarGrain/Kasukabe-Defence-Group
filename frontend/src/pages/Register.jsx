@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "../api/auth.js";
 import "./Auth.css";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,6 +54,9 @@ function Register() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -60,16 +64,31 @@ function Register() {
     if (errors[name]) {
       setErrors((current) => ({ ...current, [name]: undefined }));
     }
+    setServerError("");
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
       return;
     }
-    // The call to the register API will be added later.
+
+    setSubmitting(true);
+    setServerError("");
+    try {
+      await registerUser({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
+      navigate("/login", { state: { registered: true } });
+    } catch (error) {
+      setServerError(error.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -160,8 +179,14 @@ function Register() {
             </p>
           )}
 
-          <button type="submit" className="btn btn-primary auth-submit">
-            Create account
+          {serverError && <p className="field-error">{serverError}</p>}
+
+          <button
+            type="submit"
+            className="btn btn-primary auth-submit"
+            disabled={submitting}
+          >
+            {submitting ? "Creating account..." : "Create account"}
           </button>
         </form>
 
