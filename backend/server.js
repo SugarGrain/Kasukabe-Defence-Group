@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const FoundItem = require("./models/FoundItem");
 const LostItem = require("./models/LostItem");
+const authRoutes = require("./routes/auth");
 const path = require("path");
 
 require("dotenv").config({
@@ -20,6 +21,7 @@ const foundItemReports = [];
 
 // Allow the server to receive JSON data
 app.use(express.json());
+app.use("/api/auth", authRoutes);
 
 // Test API endpoint
 app.get("/api/health", (req, res) => {
