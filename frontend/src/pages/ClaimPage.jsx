@@ -11,8 +11,10 @@ export default function ClaimPage() {
 
   const addClaim = (claim) => setClaims([claim, ...claims]);
 
-  const changeStatus = (id, status) =>
-    setClaims(claims.map((c) => (c._id === id ? { ...c, status } : c)));
+    const changeStatus = (id, status, adminMessage) =>
+    setClaims(
+      claims.map((c) => (c._id === id ? { ...c, status, adminMessage } : c))
+    );;
 
   const recoverItem = (id, handoverNote) =>
     setClaims(
